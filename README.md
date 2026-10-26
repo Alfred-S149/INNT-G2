@@ -1,66 +1,52 @@
 # INNT-G2 - Riskbase
+Riskbase er et AI-understøttet beslutningsstøttesystem til pre-screening af nye ejendomsprojekter. Applikationen hjælper projektudviklere med at omsætte ustruktureret prospectmateriale til et struktureret beslutningsgrundlag, hvor dealbreakers og informationshuller bliver synlige tidligt.
+
+Denne mappe indeholder frontenden, som er bygget i Next.js. Den er en del af et samlet Riskbase-projekt (et såkaldt monorepo), hvor flere dele af systemet ligger i samme repository.
+
+## Demovideo
 
 https://github.com/user-attachments/assets/573cd778-3a97-4dc8-b011-364cb32eb5eb
 
-Next.js frontend for riskbase. Part of the riskbase monorepo (turborepo + bun workspaces).
-
-## Requirements
-
-- bun (this repo pins the version via `packageManager` in the root `package.json`, currently `bun@1.3.5`)
-- Node not required directly, bun handles the runtime
-
-## Setup
-
-Run everything from the repo root, not from `apps/web`. The workspace deps are hoisted, so installing from inside `apps/web` will miss things.
-
+## Teknologi
+ 
+- **Next.js** – frontend og navigation mellem siderne
+- **Supabase** – relationel database, hvor skemaer, felter og øvrige data gemmes
+- **Tailwind CSS + shadcn** – styling og UI-komponenter (styling ligger adskilt fra logikken)
+- **Bun + Turborepo** – installation og kørsel af projektet
+Fremadrettet skal der kobles en FastAPI-server på, som håndterer ekstraktion og parsing af prospectmateriale.
+ 
+## Sådan kører du projektet
+ 
+**1. Installer Bun**
+ 
+Projektet bruger [Bun](https://bun.sh) (version 1.3.5). Node skal ikke installeres separat.
+ 
+**2. Installer afhængigheder**
+ 
+Kør kommandoen fra projektets rodmappe (ikke inde i `apps/web`):
+ 
 ```bash
-cd ../..          # repo root
 bun install
 ```
-
-## Running the dev server
-
-From the repo root:
-
+ 
+**3. Tilføj adgang til databasen**
+ 
+Applikationen henter og gemmer data i Supabase. For at køre projektet lokalt kræves en unik API-nøgle til Supabase-databasen. Nøglen er af sikkerhedshensyn **ikke** delt i dette GitHub-repository, og uden den kan applikationen starte, men ikke vise eller gemme data.
+ 
+Har du fået adgang, opretter du en fil med navnet `.env.local` i `apps/web` og indsætter nøglerne:
+ 
 ```bash
-bun run dev
+NEXT_PUBLIC_SUPABASE_URL=<din-supabase-url>
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<din-api-nøgle>
 ```
-
-This runs `turbo dev`, which picks up every app in `apps/*` that has a `dev` script. Right now that's just `@riskbase/web`. Turbo prints which packages are in scope when it starts, e.g.:
-
-```
-Packages in scope: @riskbase/web
-```
-
-Server comes up on http://localhost:3000. If something is already bound to 3000 (leftover process from a previous run, another terminal, etc.), Next will fall back to 3001 and Turbo will error out with "Another next dev server is already running" — it does not kill the old one for you. Check for a stray process first:
-
+ 
+**4. Start applikationen**
+ 
+Stadig fra rodmappen:
+ 
 ```bash
-lsof -i :3000
-kill <pid>
+bun run dev: prod
 ```
-
-You can also run just this app without going through turbo, if you're only working on web and don't care about other workspace packages:
-
-```bash
-cd apps/web
-bun run dev
-```
-
-## Other scripts
-
-From `apps/web`:
-
-```bash
-bun run build        # next build
-bun run start         # next start, after build
-bun run lint          # eslint
-bun run type-check    # tsc --noEmit, no output
-bun run clean         # rm -rf .next
-```
-
-Same scripts work from the repo root prefixed with `turbo`, e.g. `bun run build` at the root builds every app.
-
-## Notes
-
-- Styled with Tailwind v4 + shadcn (base UI, not radix — see AGENTS.md before touching any UI primitives, this is not the shadcn you're used to).
-- If `turbo dev` fails immediately with "Missing devEngines.packageManager or legacy packageManager field", the root `package.json` is missing the `packageManager` field. It has to match whatever's in `bun.lock`.
+ 
+Åbn derefter [http://localhost:3000](http://localhost:3000) i browseren.
+ 
